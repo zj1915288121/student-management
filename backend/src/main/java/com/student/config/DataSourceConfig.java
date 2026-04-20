@@ -1,5 +1,6 @@
 package com.student.config;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,23 +25,29 @@ public class DataSourceConfig {
         
         // 如果是 postgresql:// 格式，转换为 jdbc:postgresql://
         if (url != null && url.startsWith("postgresql://")) {
-            // postgresql://user:password@host:port/database?params
-            // 转换为 jdbc:postgresql://host:port/database?params
-            // 用户名密码从 URL 中提取
-            
             try {
                 // 解析 postgresql:// 格式的 URL
                 // 格式: postgresql://[user[:password]@][host][:port][/database][?params]
                 String remaining = url.substring("postgresql://".length());
                 
-                String userInfo = "";
+                String username = null;
+                String password = null;
                 String hostPortDb = remaining;
                 
                 // 提取用户信息（如果有 @ 符号）
                 int atIndex = remaining.indexOf('@');
                 if (atIndex > 0) {
-                    userInfo = remaining.substring(0, atIndex);
+                    String userInfo = remaining.substring(0, atIndex);
                     hostPortDb = remaining.substring(atIndex + 1);
+                    
+                    // 解析用户名密码
+                    int colonIndex = userInfo.indexOf(':');
+                    if (colonIndex > 0) {
+                        username = userInfo.substring(0, colonIndex);
+                        password = userInfo.substring(colonIndex + 1);
+                    } else {
+                        username = userInfo;
+                    }
                 }
                 
                 // 构建新的 JDBC URL
@@ -51,31 +58,21 @@ public class DataSourceConfig {
                     jdbcUrl = jdbcUrl + (jdbcUrl.contains("?") ? "&" : "?") + "sslmode=require";
                 }
                 
-                System.out.println("[DataSourceConfig] Converted URL: postgresql://***@*** -> jdbc:postgresql://***");
+                System.out.println("[DataSourceConfig] Converted DATABASE_URL to JDBC format");
                 
-                // 创建 DataSource 并设置转换后的 URL
-                org.apache.tomcat.jdbc.pool.DataSource ds = new org.apache.tomcat.jdbc.pool.DataSource();
-                ds.setUrl(jdbcUrl);
-                ds.setDriverClassName("org.postgresql.Driver");
+                // 使用 HikariCP 创建 DataSource
+                HikariDataSource dataSource = new HikariDataSource();
+                dataSource.setJdbcUrl(jdbcUrl);
+                dataSource.setDriverClassName("org.postgresql.Driver");
                 
-                // 从 userInfo 中提取用户名密码
-                if (!userInfo.isEmpty()) {
-                    int colonIndex = userInfo.indexOf(':');
-                    if (colonIndex > 0) {
-                        ds.setUsername(userInfo.substring(0, colonIndex));
-                        ds.setPassword(userInfo.substring(colonIndex + 1));
-                    } else {
-                        ds.setUsername(userInfo);
-                    }
-                } else {
-                    // 如果 URL 中没有用户信息，使用环境变量
-                    String username = System.getenv("DB_USER");
-                    String password = System.getenv("DB_PASSWORD");
-                    if (username != null) ds.setUsername(username);
-                    if (password != null) ds.setPassword(password);
+                if (username != null) {
+                    dataSource.setUsername(username);
+                }
+                if (password != null) {
+                    dataSource.setPassword(password);
                 }
                 
-                return ds;
+                return dataSource;
                 
             } catch (Exception e) {
                 System.err.println("[DataSourceConfig] Failed to parse DATABASE_URL: " + e.getMessage());
@@ -83,7 +80,7 @@ public class DataSourceConfig {
             }
         }
         
-        // 如果已经是 jdbc: 格式，使用默认配置
-        return properties.initializeDataSourceBuilder().build();
+        // 如果已经是 jdbc: 格式或为空，使用默认配置
+        return properties.initializeDataSourceBuilder().type(HikariDataSource.class).build();
     }
 }
