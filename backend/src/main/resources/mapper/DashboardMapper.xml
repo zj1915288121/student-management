@@ -11,11 +11,11 @@
     </select>
 
     <select id="getClassRanking" resultType="java.util.HashMap">
-        SELECT c.class_name as className, AVG(sc.score) as avgScore
+        SELECT c.class_name as "className", AVG(sc.score) as "avgScore"
         FROM score sc JOIN student s ON sc.student_id = s.id
         JOIN "class" c ON s.class_id = c.id
         GROUP BY c.id, c.class_name
-        ORDER BY avgScore DESC LIMIT 10
+        ORDER BY "avgScore" DESC LIMIT 10
     </select>
 
 </mapper>
