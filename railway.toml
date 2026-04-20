@@ -3,7 +3,7 @@
   builder = "dockerfile"
 
 [build]
-  dockerfilePath = "backend/Dockerfile"
+  dockerfilePath = "Dockerfile"
 
 [[services]]
   port = 8080
@@ -14,7 +14,3 @@
     PROFILE = "default"
     ENABLE_SWAGGER = "false"
     JAVA_OPTS = "-Xmx256m"
-
-[[databases]]
-  name = "student-db"
-  databaseName = "student_management"
