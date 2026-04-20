@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.student.mapper.StatusChangeMapper">
+
+    <select id="selectPageList" resultType="com.student.vo.StatusChangeVO">
+        SELECT * FROM status_change WHERE 1=1
+        <if test="query.keyword != null and query.keyword != ''">
+            AND (student_no LIKE CONCAT('%', #{query.keyword}, '%')
+                 OR student_name LIKE CONCAT('%', #{query.keyword}, '%'))
+        </if>
+        <if test="query.studentId != null">AND student_id = #{query.studentId}</if>
+        <if test="query.changeType != null">AND change_type = #{query.changeType}</if>
+        <if test="query.status != null">AND status = #{query.status}</if>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectMyPageList" resultType="com.student.vo.StatusChangeVO">
+        SELECT * FROM status_change
+        WHERE student_id = #{studentId}
+        ORDER BY create_time DESC
+    </select>
+
+</mapper>

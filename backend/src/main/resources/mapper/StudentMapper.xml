@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.student.mapper.StudentMapper">
+
+    <select id="selectPageList" resultType="com.student.vo.StudentVO">
+        SELECT s.*, c.class_name
+        FROM student s
+        LEFT JOIN `class` c ON s.class_id = c.id
+        WHERE 1=1
+        <if test="query.keyword != null and query.keyword != ''">
+            AND (s.student_no LIKE CONCAT('%', #{query.keyword}, '%')
+                 OR s.name LIKE CONCAT('%', #{query.keyword}, '%'))
+        </if>
+        <if test="query.classId != null">AND s.class_id = #{query.classId}</if>
+        <if test="query.major != null and query.major != ''">AND s.major = #{query.major}</if>
+        <if test="query.grade != null and query.grade != ''">AND s.grade = #{query.grade}</if>
+        <if test="query.status != null">AND s.status = #{query.status}</if>
+        ORDER BY s.create_time DESC
+    </select>
+
+</mapper>

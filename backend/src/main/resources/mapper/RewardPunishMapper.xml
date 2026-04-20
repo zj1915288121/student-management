@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.student.mapper.RewardPunishMapper">
+
+    <select id="selectPageList" resultType="com.student.vo.RewardPunishVO">
+        SELECT rp.*, s.class_id,
+               (SELECT c.class_name FROM "class" c WHERE c.id = s.class_id) as className
+        FROM reward_punish rp
+        LEFT JOIN student s ON rp.student_id = s.id
+        WHERE 1=1
+        <if test="query.keyword != null and query.keyword != ''">
+            AND (rp.student_no LIKE CONCAT('%', #{query.keyword}, '%')
+                 OR rp.student_name LIKE CONCAT('%', #{query.keyword}, '%'))
+        </if>
+        <if test="query.studentId != null">AND rp.student_id = #{query.studentId}</if>
+        <if test="query.type != null">AND rp.type = #{query.type}</if>
+        <if test="query.dateStart != null and query.dateStart != ''">AND rp.record_date &gt;= #{query.dateStart}</if>
+        <if test="query.dateEnd != null and query.dateEnd != ''">AND rp.record_date &lt;= #{query.dateEnd}</if>
+        ORDER BY rp.create_time DESC
+    </select>
+
+    <select id="selectByStudentId" resultType="com.student.vo.RewardPunishVO">
+        SELECT rp.*, s.class_id,
+               (SELECT c.class_name FROM "class" c WHERE c.id = s.class_id) as className
+        FROM reward_punish rp
+        LEFT JOIN student s ON rp.student_id = s.id
+        WHERE rp.student_id = #{studentId}
+        ORDER BY rp.create_time DESC
+    </select>
+
+</mapper>

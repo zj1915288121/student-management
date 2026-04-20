@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.student.mapper.CourseMapper">
+
+    <select id="selectPageList" resultType="com.student.vo.CourseVO">
+        SELECT * FROM course WHERE 1=1
+        <if test="query.keyword != null and query.keyword != ''">
+            AND (course_name LIKE CONCAT('%', #{query.keyword}, '%')
+                 OR course_code LIKE CONCAT('%', #{query.keyword}, '%'))
+        </if>
+        <if test="query.semester != null and query.semester != ''">AND semester = #{query.semester}</if>
+        <if test="query.teacherId != null">AND teacher_id = #{query.teacherId}</if>
+        ORDER BY create_time DESC
+    </select>
+
+</mapper>

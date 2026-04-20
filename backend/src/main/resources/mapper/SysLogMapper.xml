@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.student.mapper.SysLogMapper">
+
+    <select id="selectPageList" resultType="com.student.vo.SysLogVO">
+        SELECT * FROM sys_log WHERE 1=1
+        <if test="query.keyword != null and query.keyword != ''">
+            AND (username LIKE CONCAT('%', #{query.keyword}, '%')
+                 OR operation LIKE CONCAT('%', #{query.keyword}, '%'))
+        </if>
+        <if test="query.username != null and query.username != ''">AND username = #{query.username}</if>
+        <if test="query.operation != null and query.operation != ''">AND operation LIKE CONCAT('%', #{query.operation}, '%')</if>
+        <if test="query.dateStart != null and query.dateStart != ''">AND create_time &gt;= #{query.dateStart}</if>
+        <if test="query.dateEnd != null and query.dateEnd != ''">AND create_time &lt;= #{query.dateEnd}</if>
+        ORDER BY create_time DESC
+    </select>
+
+</mapper>

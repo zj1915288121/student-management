@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.student.mapper.ScholarshipApplyMapper">
+
+    <select id="selectPageList" resultType="com.student.vo.ScholarshipApplyVO">
+        SELECT sa.*, sc.amount
+        FROM scholarship_apply sa
+        LEFT JOIN scholarship sc ON sa.scholarship_id = sc.id
+        WHERE 1=1
+        <if test="query.keyword != null and query.keyword != ''">
+            AND (sa.student_no LIKE CONCAT('%', #{query.keyword}, '%')
+                 OR sa.student_name LIKE CONCAT('%', #{query.keyword}, '%'))
+        </if>
+        <if test="query.scholarshipId != null">AND sa.scholarship_id = #{query.scholarshipId}</if>
+        <if test="query.status != null">AND sa.status = #{query.status}</if>
+        ORDER BY sa.apply_time DESC
+    </select>
+
+    <select id="selectMyPageList" resultType="com.student.vo.ScholarshipApplyVO">
+        SELECT sa.*, sc.amount
+        FROM scholarship_apply sa
+        LEFT JOIN scholarship sc ON sa.scholarship_id = sc.id
+        WHERE sa.student_id = #{studentId}
+        ORDER BY sa.apply_time DESC
+    </select>
+
+</mapper>

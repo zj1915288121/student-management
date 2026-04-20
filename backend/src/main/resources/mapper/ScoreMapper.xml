@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.student.mapper.ScoreMapper">
+
+    <select id="selectPageList" resultType="com.student.vo.ScoreVO">
+        SELECT sc.*, c.credit
+        FROM score sc
+        LEFT JOIN course c ON sc.course_id = c.id
+        WHERE 1=1
+        <if test="query.keyword != null and query.keyword != ''">
+            AND (sc.student_no LIKE CONCAT('%', #{query.keyword}, '%')
+                 OR sc.student_name LIKE CONCAT('%', #{query.keyword}, '%'))
+        </if>
+        <if test="query.studentId != null">AND sc.student_id = #{query.studentId}</if>
+        <if test="query.courseId != null">AND sc.course_id = #{query.courseId}</if>
+        <if test="query.semester != null and query.semester != ''">AND sc.semester = #{query.semester}</if>
+        ORDER BY sc.create_time DESC
+    </select>
+
+    <select id="selectMyScores" resultType="com.student.vo.ScoreVO">
+        SELECT sc.*, c.credit
+        FROM score sc
+        LEFT JOIN course c ON sc.course_id = c.id
+        WHERE sc.student_id = #{studentId}
+        ORDER BY sc.semester DESC, sc.create_time DESC
+    </select>
+
+    <select id="selectStats" resultType="java.util.Map">
+        SELECT
+            COALESCE(AVG(sc.score), 0) as avgScore,
+            COALESCE(MAX(sc.score), 0) as maxScore,
+            COALESCE(MIN(sc.score), 0) as minScore,
+            COALESCE(SUM(CASE WHEN sc.score >= 60 THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(*), 0), 0) as passRate
+        FROM score sc
+        WHERE 1=1
+        <if test="query.courseId != null">AND sc.course_id = #{query.courseId}</if>
+        <if test="query.semester != null and query.semester != ''">AND sc.semester = #{query.semester}</if>
+    </select>
+
+    <select id="selectRanking" resultType="com.student.vo.ScoreVO">
+        SELECT sc.*, c.credit
+        FROM score sc
+        LEFT JOIN course c ON sc.course_id = c.id
+        WHERE sc.course_id = #{courseId}
+        <if test="semester != null and semester != ''">AND sc.semester = #{semester}</if>
+        ORDER BY sc.score DESC
+    </select>
+
+    <select id="selectWarning" resultType="com.student.vo.ScoreVO">
+        SELECT sc.*, c.credit
+        FROM score sc
+        LEFT JOIN course c ON sc.course_id = c.id
+        WHERE sc.score &lt; 60
+        <if test="semester != null and semester != ''">AND sc.semester = #{semester}</if>
+        ORDER BY sc.score ASC
+    </select>
+
+</mapper>
