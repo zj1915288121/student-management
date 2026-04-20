@@ -5,7 +5,7 @@
     <select id="selectPageList" resultType="com.student.vo.StudentVO">
         SELECT s.*, c.class_name
         FROM student s
-        LEFT JOIN `class` c ON s.class_id = c.id
+        LEFT JOIN "class" c ON s.class_id = c.id
         WHERE 1=1
         <if test="query.keyword != null and query.keyword != ''">
             AND (s.student_no LIKE CONCAT('%', #{query.keyword}, '%')
