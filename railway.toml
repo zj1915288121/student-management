@@ -5,6 +5,9 @@
 [build]
   dockerfilePath = "Dockerfile"
 
+[variables]
+  DATABASE_URL = "postgresql://neondb_owner:npg_OVrbo3Bs2LIT@ep-floral-credit-a1jsut2a.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+
 [[services]]
   port = 8080
   healthCheckPath = "/auth/login"
