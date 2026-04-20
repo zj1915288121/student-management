@@ -153,4 +153,4 @@ CREATE TABLE sys_log (
 
 -- 初始化管理员账号（密码：123456，BCrypt加密）
 INSERT INTO sys_user (username, password, role, real_name, status)
-VALUES ('admin', '$2b$10$WraGLGpLtwN8Q.HtT95N.uRu3wM9H0NTGPqpsWshDgcL08aNMpKkW', 1, '系统管理员', 1);
+VALUES ('admin', '$2a$10$WraGLGpLtwN8Q.HtT95N.uRu3wM9H0NTGPqpsWshDgcL08aNMpKkW', 1, '系统管理员', 1);

@@ -40,6 +40,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public Result<?> handleException(Exception e) {
         log.error("系统异常：", e);
-        return Result.error(ResultCode.ERROR.getCode(), "系统异常，请联系管理员");
+        String detail = e.getClass().getSimpleName() + ": " + e.getMessage();
+        return Result.error(ResultCode.ERROR.getCode(), "系统异常：" + detail);
     }
 }
