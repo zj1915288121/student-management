@@ -4,9 +4,10 @@ server:
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: ${DATABASE_URL}
-    username: ${DB_USER:postgres}
-    password: ${DB_PASSWORD}
+    # 支持 Railway DATABASE_URL 格式（postgresql://）和标准 JDBC 格式（jdbc:postgresql://）
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/student_management}
+    username: ${DB_USER:}
+    password: ${DB_PASSWORD:}
   servlet:
     multipart:
       max-file-size: 10MB
