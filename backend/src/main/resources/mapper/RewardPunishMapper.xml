@@ -4,7 +4,7 @@
 
     <select id="selectPageList" resultType="com.student.vo.RewardPunishVO">
         SELECT rp.*, s.class_id,
-               (SELECT c.class_name FROM "class" c WHERE c.id = s.class_id) as className
+               (SELECT c.class_name FROM `class` c WHERE c.id = s.class_id) as className
         FROM reward_punish rp
         LEFT JOIN student s ON rp.student_id = s.id
         WHERE 1=1
@@ -21,7 +21,7 @@
 
     <select id="selectByStudentId" resultType="com.student.vo.RewardPunishVO">
         SELECT rp.*, s.class_id,
-               (SELECT c.class_name FROM "class" c WHERE c.id = s.class_id) as className
+               (SELECT c.class_name FROM `class` c WHERE c.id = s.class_id) as className
         FROM reward_punish rp
         LEFT JOIN student s ON rp.student_id = s.id
         WHERE rp.student_id = #{studentId}

@@ -9,6 +9,8 @@ import com.student.query.ScholarshipApplyQuery;
 import com.student.query.ScholarshipQuery;
 import com.student.service.ScholarshipApplyService;
 import com.student.service.ScholarshipService;
+import com.student.entity.Student;
+import com.student.mapper.StudentMapper;
 import com.student.utils.SecurityUtils;
 import com.student.vo.ScholarshipApplyVO;
 import com.student.vo.ScholarshipVO;
@@ -29,6 +31,15 @@ public class ScholarshipController {
 
     private final ScholarshipService scholarshipService;
     private final ScholarshipApplyService scholarshipApplyService;
+    private final StudentMapper studentMapper;
+
+    private Long resolveStudentId() {
+        String username = SecurityUtils.getCurrentUsername();
+        Student student = studentMapper.selectOne(
+                new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<Student>()
+                        .eq(Student::getStudentNo, username));
+        return student != null ? student.getId() : null;
+    }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT')")
     @Operation(summary = "分页查询奖学金类型")
@@ -129,7 +140,7 @@ public class ScholarshipController {
     public Result<IPage<ScholarshipApplyVO>> getMyApplyList(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size) {
-        Long studentId = SecurityUtils.getCurrentUserId();
+        Long studentId = resolveStudentId();
         return Result.success(scholarshipApplyService.getMyList(page, size, studentId));
     }
 }

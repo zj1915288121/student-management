@@ -6,7 +6,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("\"class\"")
+@TableName("`class`")
 public class Classes {
 
     @TableId(type = IdType.AUTO)

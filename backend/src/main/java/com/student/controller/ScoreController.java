@@ -7,6 +7,8 @@ import com.student.dto.ScoreBatchDTO;
 import com.student.dto.ScoreDTO;
 import com.student.query.ScoreQuery;
 import com.student.service.ScoreService;
+import com.student.entity.Student;
+import com.student.mapper.StudentMapper;
 import com.student.utils.SecurityUtils;
 import com.student.vo.ScoreVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,6 +31,15 @@ import java.util.Map;
 public class ScoreController {
 
     private final ScoreService scoreService;
+    private final StudentMapper studentMapper;
+
+    private Long resolveStudentId() {
+        String username = SecurityUtils.getCurrentUsername();
+        Student student = studentMapper.selectOne(
+                new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<Student>()
+                        .eq(Student::getStudentNo, username));
+        return student != null ? student.getId() : null;
+    }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT')")
     @Operation(summary = "分页查询成绩")
@@ -77,7 +88,7 @@ public class ScoreController {
     @Operation(summary = "我的成绩")
     @GetMapping("/my")
     public Result<List<ScoreVO>> getMyScores() {
-        Long studentId = SecurityUtils.getCurrentUserId();
+        Long studentId = resolveStudentId();
         return Result.success(scoreService.getMyScores(studentId));
     }
 

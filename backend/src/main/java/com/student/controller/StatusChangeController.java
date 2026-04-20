@@ -6,6 +6,8 @@ import com.student.common.Result;
 import com.student.dto.StatusChangeDTO;
 import com.student.query.StatusChangeQuery;
 import com.student.service.StatusChangeService;
+import com.student.entity.Student;
+import com.student.mapper.StudentMapper;
 import com.student.utils.SecurityUtils;
 import com.student.vo.StatusChangeVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,6 +24,15 @@ import org.springframework.web.bind.annotation.*;
 public class StatusChangeController {
 
     private final StatusChangeService statusChangeService;
+    private final StudentMapper studentMapper;
+
+    private Long resolveStudentId() {
+        String username = SecurityUtils.getCurrentUsername();
+        Student student = studentMapper.selectOne(
+                new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<Student>()
+                        .eq(Student::getStudentNo, username));
+        return student != null ? student.getId() : null;
+    }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT')")
     @Operation(summary = "分页查询异动记录")
@@ -81,7 +92,7 @@ public class StatusChangeController {
     public Result<IPage<StatusChangeVO>> getMyList(
             @RequestParam(defaultValue = "1") Integer page,
             @RequestParam(defaultValue = "10") Integer size) {
-        Long studentId = SecurityUtils.getCurrentUserId();
+        Long studentId = resolveStudentId();
         return Result.success(statusChangeService.getMyList(page, size, studentId));
     }
 }
